@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<script>
+    // se necesita extension de chrome se llama  Allow-Control-Allow-Origin: *
+    var arrayContry={
+        1:"AGUASCALIENTES",
+        2:"BAJA CALIFORNIA",
+        3:"BAJA CALIFORNIA SUR",
+        4:"CAMPECHE",
+        5:"COAHUILA",
+        6:"COLIMA",
+        7:"CHIAPAS",
+        8:"CHIHUAHUA",
+        9:"CIUDAD DE MÉXICO",
+        10:"DURANGO",
+        11:"GUANAJUATO",
+        12:"GUERRERO",
+        13:"HIDALGO",
+        14:"JALISCO",
+        15:"MEXICO",
+        16:"MICHOACAN",
+        17:"MORELOS",
+        18:"NAYARIT",
+        19:"NUEVO LEON",
+        20:"OAXACA",
+        21:"PUEBLA",
+        22:"QUERETARO",
+        23:"QUINTANA ROO",
+        24:"SAN LUIS POTOSI",
+        25:"SINALOA",
+        26:"SONORA",
+        27:"TABASCO",
+        28:"TAMAULIPAS",
+        29:"TLAXCALA",
+        30:"VERACRUZ",
+        31:"YUCATAN",
+        32:"ZACATECAS",
+    }
+    var arraySex={"HOMBRE":"H","MUJER":"M"}
+    var sendLoad = false
+    var elementComodin=0
+    var objectPeople = {}
+    var loadTable, list
+    function sendCurps(){
+        $("#sendCurps").prop('disabled', true);
+        $('#responsetable tbody').html("")
+        if(document.getElementById("listCurps").value!=""){
+            curps = document.getElementById("listCurps").value
+            list = curps.split("\n");
+            
+            list.forEach(element => {
+                dataCurp = element.split(",")
+                //console.log(element)
+                if(element!=""){
+                    $.ajax({
+                        url: 'http://sipso.sedesol.gob.mx/consultarCurp/consultaCurpR.jsp?cveCurp='+dataCurp[6],
+                        method :"GET",
+                        dataType: "html",
+                        contentType: "text/html; charset=UTF-8",
+                        success: function(result){
+                            //$(result).find("#consultaCurp").html()
+                            //console.log($(result).find(".datos").html())
+                            if($(result).find(".datos").html()=="DATOS ENCONTRADOS"){
+                                peopleData = element.split(",")
+                                curp= $(result).find("table tr:eq(1) td:eq(1)").text() // curp
+                                app= $(result).find("table tr:eq(2) td:eq(1)").text() // app
+                                apm= $(result).find("table tr:eq(3) td:eq(1)").text() // apm
+                                name= $(result).find("table tr:eq(4) td:eq(1)").text() // nombre
+                                sex= $(result).find("table tr:eq(5) td:eq(1)").text() // genero
+                                sex= sex.replace(/\s/g, '');
+                                birthday= $(result).find("table tr:eq(6) td:eq(1)").text() // birthday
+                                country = $(result).find("table tr:eq(7) td:eq(1)").text() // entidad
+                                
+                                if(name!=peopleData[0])
+                                    name=`<span style="color:red">${name}</span>`
+
+                                if(app!=peopleData[1])
+                                    app=`<span style="color:red">${app}</span>`
+
+                                if(apm!=peopleData[2])
+                                    apm=`<span style="color:red">${apm}</span>`
+                                
+                                if(birthday!=peopleData[3])
+                                    birthday=`<span style="color:red">${birthday}</span>`
+                                
+                                if(country!=arrayContry[peopleData[4]])
+                                    country=`<span style="color:red">${country}</span>`
+                                
+                                if(arraySex[sex]!=peopleData[5])
+                                    sex=`<span style="color:red">${sex}</span>`
+
+                                if(curp!=peopleData[6])
+                                    curp=`<span style="color:red">${curp}</span>`
+
+                                //if(!( curp in objectPeople )){
+                                    //objectPeople[curp]= `<tr><td>${app}</td><td>${apm}</td><td>${name}</td><td>${birthday}</td><td>${country}</td><td>${curp}</td><td>${sex}</td><td>${peopleData[0]}</td><td>${peopleData[1]}</td><td>${peopleData[2]}</td><td>${peopleData[3]}</td><td>${peopleData[4]}</td><td>${peopleData[5]}</td><td>${peopleData[6]}</td></tr>`
+                                    $('#responsetable tbody').append(`<tr><td>${app}</td><td>${apm}</td><td>${name}</td><td>${birthday}</td><td>${country}</td><td>${curp}</td><td>${sex}</td><td>${peopleData[0]}</td><td>${peopleData[1]}</td><td>${peopleData[2]}</td><td>${peopleData[3]}</td><td>${peopleData[4]}</td><td>${peopleData[5]}</td><td>${peopleData[6]}</td></tr>`);
+                                
+
+                                //$('#responsetable tbody').append(`<tr><td>${app}</td><td>${apm}</td><td>${name}</td><td>${birthday}</td><td>${country}</td><td>${curp}</td><td>${sex}</td><td>${peopleData[0]}</td><td>${peopleData[1]}</td><td>${peopleData[2]}</td><td>${peopleData[3]}</td><td>${peopleData[4]}</td><td>${peopleData[5]}</td><td>${peopleData[6]}</td></tr>`);
+                            }else{
+                                //if(!( curp in objectPeople )){
+                                    //objectPeople[curp]= `<tr><td>${app}</td><td>${apm}</td><td>${name}</td><td>${birthday}</td><td>${country}</td><td>${curp}</td><td>${sex}</td><td>${peopleData[0]}</td><td>${peopleData[1]}</td><td>${peopleData[2]}</td><td>${peopleData[3]}</td><td>${peopleData[4]}</td><td>${peopleData[5]}</td><td>${peopleData[6]}</td></tr>`
+                                    peopleData = element.split(",")
+                                    $('#responsetable tbody').append( `<tr><td colspan="5"> No se encontro curp</td><td>${peopleData[6]}</td><td colspan="8"></td></tr>` );
+                                
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr)
+                        }
+                    });
+                    
+                }else{
+                    elementComodin=1
+                }
+            });
+            loadTable = setInterval(function(){
+                console.log(Object.keys(objectPeople).length)
+                console.log(list.length, document.getElementById("responsetable").rows.length+elementComodin)
+                if(list.length == document.getElementById("responsetable").rows.length+elementComodin){
+                    $("#sendCurps").prop('disabled', false);
+                    //console.log(objectPeople,Object.keys(objectPeople).length)
+                    /*
+                    objectPeople.forEach(person=>{
+                        $('#responsetable tbody').append(person);
+                    })
+                    */
+                    clearInterval(loadTable)
+                }
+            }, 500);
+        }
+    }
+</script>
+<body>
+    <div class="container" style="padding:10px" >
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Lista de curps</span>
+            </div>
+            <textarea id="listCurps" class="form-control" aria-label="With textarea"></textarea>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="sendCurps()" id="sendCurps">Consultar curps</button>
+        <b>*Nota: Los textos marcados en rojo no coincide con los datos enviados</b>
+        <div id="response">
+            <table id="responsetable" class="table-striped table-hover table-sm table-bordered" style="font-size:13px">
+                    <thead>
+                        <tr>
+                            <th scope="col">Apellido P</th>
+                            <th scope="col">Appellido M</th>
+                            <th scope="col">Nombres</th>
+                            <th scope="col">Fecha Nac.</th>
+                            <th scope="col">Lugar</th>
+                            <th scope="col">CURP</th>
+                            <th scope="col">Sexo</th>
+                            <th scope="col">Apellido P Sist</th>
+                            <th scope="col">Appellido M Sist</th>
+                            <th scope="col">Nombres Sist</th>
+                            <th scope="col">Fecha Nac. Sist</th>
+                            <th scope="col">Lugar Sist</th>
+                            <th scope="col">CURP Sist</th>
+                            <th scope="col">Sexo Sist</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
